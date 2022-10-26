@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1053463169025",
+    "project_id": "gomop-e051e",
+    "storage_bucket": "gomop-e051e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1053463169025:android:a903f5220d244e6f039800",
+        "android_client_info": {
+          "package_name": "com.example.gomop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1053463169025-jv81ua3b7fvs7b79ujegef6jdmtltf9a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAa-A7U-xXJssXeoi0gCayNn-GPiBweUiQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1053463169025-jv81ua3b7fvs7b79ujegef6jdmtltf9a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
