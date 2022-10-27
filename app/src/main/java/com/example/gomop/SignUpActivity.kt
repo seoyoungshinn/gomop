@@ -33,7 +33,7 @@ class SignUpActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         Log.d("auth",auth.toString())
 
-        binding.btnSignIn.setOnClickListener {
+        binding.btnSignUp.setOnClickListener {  //회원가입
             val email = binding.edtEmail.text.toString().trim()
             val password = binding.edtPassword.text.toString().trim()
 
@@ -41,6 +41,32 @@ class SignUpActivity : AppCompatActivity() {
 
             createUser(email, password)
         }
+
+        binding.btnSignIn.setOnClickListener { //로그인
+            val email = binding.edtEmail.text.toString().trim()
+            val password = binding.edtPassword.text.toString().trim()
+
+            // Validate...
+
+            login(email, password)
+        }
+    }
+
+    private fun login(email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show()
+                    val user = auth.currentUser
+                    updateUI(user)
+                } else {
+                    Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
+                    updateUI(null)
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun createUser(email: String, password: String) {
