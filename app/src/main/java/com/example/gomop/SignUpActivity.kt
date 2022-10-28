@@ -38,7 +38,7 @@ class SignUpActivity : AppCompatActivity() {
             val password = binding.edtPassword.text.toString().trim()
 
             // Validate...
-
+            Log.d("id/pwd : ",email+password)
             createUser(email, password)
         }
 
@@ -47,7 +47,7 @@ class SignUpActivity : AppCompatActivity() {
             val password = binding.edtPassword.text.toString().trim()
 
             // Validate...
-
+            Log.d("id/pwd : ",email+password)
             login(email, password)
         }
     }
