@@ -98,7 +98,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="80dp"
-            android:background="@drawable/google_login_button"
+            android:background="@drawable/google_login"
             android:text="Google login"
             android:textColor="@color/white" />
         //android:textColor="@color/colorWhite" />
