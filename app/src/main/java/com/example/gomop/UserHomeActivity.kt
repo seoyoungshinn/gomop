@@ -1,9 +1,13 @@
 package com.example.gomop
 
+import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 
 import com.example.gomop.databinding.ActivityUserHomeBinding
 import com.example.gomop.navigation.AlarmFragment
@@ -22,7 +26,7 @@ class UserHomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationIt
         setContentView(binding.root)
 
         val bottom_navigation=binding.bottomNavigation
-        //ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),1)
+        ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),1)
         bottom_navigation.setOnNavigationItemSelectedListener(this)
         bottom_navigation.selectedItemId = R.id.action_home
 
@@ -54,10 +58,15 @@ class UserHomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationIt
                 return true
             }
             R.id.action_add_photo->{
-/*                if(ContextCompat.checkSelfPermission(this,android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
-                    startActivity(Intent(this,
-                        AddPhotoActivity::class.java))
-                }*/
+                if(ContextCompat.checkSelfPermission(this,android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    startActivity(
+                        Intent(
+                            this,
+                            AddPhotoActivity::class.java
+                        )
+                    )
+                }
+
                 return true
             }
             R.id.action_favorite_alarm->{
