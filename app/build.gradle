@@ -3,6 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     //Add the Google services Gradle Plugin (FIREBASE)
     id 'com.google.gms.google-services'
+
+    id 'kotlin-android-extensions'
 }
 
 android {
@@ -40,12 +42,20 @@ android {
 }
 
 dependencies {
+    def lifecycle_version = "2.4.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
 
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
+    implementation 'androidx.fragment:fragment-ktx:1.4.1'
 
     //// Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:31.0.1')
