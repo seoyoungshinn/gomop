@@ -2,6 +2,7 @@ package com.example.gomop.navigation
 
 import android.app.Person
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gomop.R
+import com.example.gomop.databinding.ActivityMainBinding
+import com.example.gomop.databinding.FragmentSearchBinding
 import kotlinx.android.synthetic.main.activity_main.*
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.fragment_search.recyclerview
@@ -27,11 +30,13 @@ import kotlinx.android.synthetic.main.item.view.*
 
 class SearchFragment : Fragment(R.layout.fragment_search) {
     var firestore : FirebaseFirestore? = null
+    //private lateinit var binding : FragmentSearchBinding
     //override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     //super.onViewCreated(view, savedInstanceState)
     override fun onCreateView(infoater: LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?): View? {
         var view = LayoutInflater.from(activity).inflate(R.layout.fragment_search, container, false)
-        return view
+
+        //  binding = FragmentSearchBinding.inflate(LayoutInflater)
 
 
 
@@ -66,7 +71,9 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         // 검색 옵션에 따라 검색
         searchBtn.setOnClickListener {
             (recyclerview.adapter as RecyclerViewAdapter).search(searchWord.text.toString(), searchOption)
+            Log.d("로그","버튼눌림")
         }
+        return view
     }
 
     inner class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
