@@ -1,5 +1,6 @@
 package com.example.gomop
 
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
@@ -8,17 +9,21 @@ import android.util.Log
 import android.view.MenuItem
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-
+import com.example.gomop.navigation.*
 import com.example.gomop.databinding.ActivityUserHomeBinding
 import com.example.gomop.navigation.AlarmFragment
 import com.example.gomop.navigation.HomeFragment
 import com.example.gomop.navigation.SearchFragment
 import com.example.gomop.navigation.UserFragment
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.UploadTask
 
 class UserHomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelectedListener {
-    private lateinit var binding :ActivityUserHomeBinding
+    private lateinit var binding : ActivityUserHomeBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,15 +46,30 @@ class UserHomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationIt
         binding.toolbarUserEmail.text = "Email: ${email}  Uid: ${uid}"
 
     }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
+        if(requestCode == UserFragment.PICK_PROFILE_FROM_ALBUM && resultCode == RESULT_OK){
+            var imageUri = data?.data
+            var uid = FirebaseAuth.getInstance().currentUser?.uid
+            var storageRef = FirebaseStorage.getInstance().reference.child("userProfileImages").child(uid!!)
+            storageRef.putFile(imageUri!!).continueWithTask { task: Task<UploadTask.TaskSnapshot> ->
+                return@continueWithTask storageRef.downloadUrl
+            }.addOnSuccessListener { uri->
+                var map = HashMap<String,Any>()
+                map["image"] = uri.toString()
+                FirebaseFirestore.getInstance().collection("profileImages").document(uid).set(map)
+            }
+        }
+    }
 
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
 
         when(item.itemId){
             R.id.action_home->{
-                var detailViewFragment = HomeFragment()
-                supportFragmentManager.beginTransaction().replace(R.id.main_content,detailViewFragment).commit()
+                var HomeFragment = HomeFragment()
+                supportFragmentManager.beginTransaction().replace(R.id.main_content,HomeFragment).commit()
                 return true
             }
             R.id.action_search->{
@@ -76,11 +96,11 @@ class UserHomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationIt
             }
             R.id.action_account->{
                 var userFragment = UserFragment()
-               /* var bundle = Bundle()
+                var bundle = Bundle()
                 var uid = FirebaseAuth.getInstance().currentUser?.uid
                 bundle.putString("destinationUid",uid)
                 userFragment.arguments = bundle
-                */
+
                 supportFragmentManager.beginTransaction().replace(R.id.main_content,userFragment).commit()
                 return true
             }

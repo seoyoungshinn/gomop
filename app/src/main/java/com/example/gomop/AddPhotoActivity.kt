@@ -8,9 +8,12 @@ import android.os.Bundle
 import android.widget.Toast
 import com.example.gomop.databinding.ActivityAddPhotoBinding
 import com.example.gomop.databinding.ActivitySignUpBinding
+import com.example.gomop.navigation.model.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.UploadTask
+import kotlinx.android.synthetic.main.activity_add_photo.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,7 +29,7 @@ class AddPhotoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddPhotoBinding.inflate(layoutInflater)
-       // setContentView(R.layout.activity_add_photo)
+        setContentView(R.layout.activity_add_photo)
         setContentView(binding.root)
 
 
@@ -37,7 +40,7 @@ class AddPhotoActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
 
         //Open the album
-       // var photoPickerIntent = Intent(Intent.ACTION_PICK)
+        //var photoPickerIntent = Intent(Intent.ACTION_PICK)
         var photoPickerIntent = Intent(Intent.ACTION_PICK)
         photoPickerIntent.type = "image/*"
         startActivityForResult(photoPickerIntent, PICK_IMAGE_FROM_ALBUM)
@@ -76,7 +79,7 @@ class AddPhotoActivity : AppCompatActivity() {
             Toast.makeText(this,"업로드 성공",Toast.LENGTH_LONG).show()
         }
 
-     /*   //Promise method --> 구글 권장 방식
+        //Promise method --> 구글 권장 방식
         storageRef?.putFile(photoUri!!)?.continueWithTask(){ task: com.google.android.gms.tasks.Task<UploadTask.TaskSnapshot> ->
             return@continueWithTask  storageRef.downloadUrl
         }?.addOnSuccessListener { uri ->
@@ -102,7 +105,7 @@ class AddPhotoActivity : AppCompatActivity() {
             setResult(Activity.RESULT_OK)
 
             finish()
-        }*/
+        }
 
 
     }
