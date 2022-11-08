@@ -15,10 +15,10 @@ import com.example.gomop.SignUpActivity
 import com.example.gomop.MainActivity
 import com.example.gomop.R
 import com.example.gomop.navigation.model.ContentDTO
-//import com.example.gomop.navigation.model.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_user_home.*
 import kotlinx.android.synthetic.main.fragment_user.view.*
 class UserFragment : Fragment(){
     var fragmentView : View? = null
@@ -41,6 +41,30 @@ class UserFragment : Fragment(){
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
         currentUserUid = auth?.currentUser?.uid
+
+        if(uid == currentUserUid){
+            //My page
+            fragmentView?.account_btn_follow_signout?.text = getString(R.string.signout)
+            fragmentView?.account_btn_follow_signout?.setOnClickListener {
+                activity?.finish()
+                startActivity(Intent(activity,SignUpActivity::class.java))
+                auth?.signOut()
+            }
+        }
+        else{
+            //Other User page
+            fragmentView?.account_btn_follow_signout?.text = getString(R.string.follow)
+            var mainactivity = (activity as MainActivity)
+            mainactivity?.toolbar_userEmail?.text = arguments?.getString("userId")
+            mainactivity?.toolbar_btn_back?.setOnClickListener {
+                mainactivity.bottom_navigation.selectedItemId = R.id.action_home
+            }
+            mainactivity?.toolbar_title_image?.visibility = View.GONE
+            mainactivity?.toolbar_userEmail?.visibility = View.VISIBLE
+            mainactivity?.toolbar_btn_back.visibility = View.VISIBLE
+        }
+
+
         fragmentView?.account_recyclerview?.adapter = UserFragmentRecyclerViewAdapter()
         fragmentView?.account_recyclerview?.layoutManager = GridLayoutManager(activity, 3)
         return fragmentView
