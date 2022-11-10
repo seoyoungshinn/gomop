@@ -12,15 +12,16 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.example.gomop.SignUpActivity
 import com.example.gomop.MainActivity
 import com.example.gomop.R
+import com.example.gomop.SignUpActivity
 import com.example.gomop.navigation.model.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.android.synthetic.main.activity_main.*
+import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.activity_user_home.*
 import kotlinx.android.synthetic.main.fragment_user.view.*
+
 class UserFragment : Fragment(){
     var fragmentView : View? = null
     var firestore : FirebaseFirestore? = null
@@ -45,7 +46,7 @@ class UserFragment : Fragment(){
 
         if(uid == currentUserUid){
             //My page
-            fragmentView?.account_btn_follow_signout?.text = getString(R.string.signout)
+            fragmentView?.account_btn_follow_signout?.text = "LOGOUT"
             fragmentView?.account_btn_follow_signout?.setOnClickListener {
                 activity?.finish()
                 startActivity(Intent(activity,SignUpActivity::class.java))
@@ -86,22 +87,16 @@ class UserFragment : Fragment(){
                     notifyDataSetChanged()
                 }*/
 
-
-                firestore?.collection("uid")?.document(uid.toString())?.collection("images")?.orderBy("timestamp")?.addSnapshotListener { querySnapshot, firebaseFirestore ->
+                //게시물 최신순으로 표기
+                firestore?.collection("uid")?.document(uid.toString())?.collection("images")?.orderBy("timestamp",
+                    Query.Direction.DESCENDING)?.addSnapshotListener { querySnapshot, firebaseFirestore ->
                 //firestore?.collection("images")?.whereEqualTo("uid",uid)?.addSnapshotListener { querySnapshot, firebaseFirestore ->
                     //Some times, This code return null of querySnapshot when it signout
-
-                    //게시물 내림차순 구현해야함 ㅜㅜ
-/*                    파이어스토어면 웟분 말씀대로하시구, 파이어베이스면 내림차순은 없구요
-                    게시물 데이터노드에 타임스탬프값을 같이 저장해주신후에 orderbychild("timestamp")로
-                            하면 시간값에따라 오름차순 정렬이되구요. 이것을 리사이클러뷰에 받아오신뒤
-                            리사이클러뷰 함수중에 stackFromEnd와 reverselayout함수를 이용해서 역순으로
-                            뿌려주시는 방법으로 가능해요*/
-
 
                     Log.d("로그 : snapshot",querySnapshot.toString())
                     Log.d("로그 : firebaseFirestore",firebaseFirestore.toString())
                     Log.d("로그 : querySnapshot.documents",querySnapshot?.documents.toString())
+
                     if(querySnapshot == null) return@addSnapshotListener
                     //Get data
                     for(snapshot in querySnapshot.documents){
@@ -111,7 +106,31 @@ class UserFragment : Fragment(){
                     fragmentView?.account_tv_post_count?.text = contentDTOs.size.toString()
                     notifyDataSetChanged()
                 }
-            }
+
+
+                //팔로워, 팔로잉 정보 받아오기
+                var snapshotData :Map<String,Any>
+                var followings : Map<String,String>
+                var followers : Map<String,String>
+                var dtr  = firestore?.collection("uid")?.document(uid.toString())
+                dtr?.get()?.addOnSuccessListener { doc->
+                    if (doc!=null){
+                        snapshotData = doc.data as Map<String, Any>
+                        followers = snapshotData.get("followers") as Map<String, String>
+                        followings = snapshotData.get("followings") as Map<String, String>
+                        Log.d("로그 snapshotData: ",snapshotData.toString())
+                        Log.d("로그 followers: ",followers.toString())
+                        Log.d("로그 followings: ",followings.toString())
+                    }
+                    notifyDataSetChanged()
+                }
+                Log.d("로그 팔로워dtr: ",dtr.toString())
+
+                //추가해야할작업 : 팔로잉/팔로워 수 받아서 프래그먼트에 표시
+                //notifyDataSetChanged() 처리 (굳이안해도될꺼같긴한데) 일단 지금은 새로고침 해야 업데이트 되게 구현해놓았음
+
+            }//end of init
+
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
                 var width = resources.displayMetrics.widthPixels / 3
                 var imageview = ImageView(parent.context)
