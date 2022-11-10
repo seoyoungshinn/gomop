@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import com.example.gomop.databinding.ActivityAddPhotoBinding
 import com.example.gomop.databinding.ActivitySignUpBinding
@@ -24,6 +25,7 @@ class AddPhotoActivity : AppCompatActivity() {
     var photoUri : Uri? = null
     var auth : FirebaseAuth? = null
     var firestore : FirebaseFirestore? = null
+    lateinit var uid : String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +40,7 @@ class AddPhotoActivity : AppCompatActivity() {
         storage = FirebaseStorage.getInstance()
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
+        uid = auth?.uid.toString()
 
         //Open the album
         //var photoPickerIntent = Intent(Intent.ACTION_PICK)
@@ -72,9 +75,13 @@ class AddPhotoActivity : AppCompatActivity() {
         var timestamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         var imageFileName = "IMAGE_" + timestamp + "_.png"
 
-        var storageRef = storage?.reference?.child("images")?.child(imageFileName)
+      //  var storageRef = storage?.reference?.child("images")?.child(imageFileName)
+        var storageRef = storage?.reference?.child("uid")?.child(uid)?.child("images")
+        Log.d("사진업로드위치",storageRef.toString())
 
-        //파일 업로드
+
+
+        //storage에 파일 업로드
         storageRef?.putFile(photoUri!!)?.addOnSuccessListener{
             Toast.makeText(this,"업로드 성공",Toast.LENGTH_LONG).show()
         }
@@ -100,7 +107,12 @@ class AddPhotoActivity : AppCompatActivity() {
             //Insert timestamp
             contentDTO.timestamp = System.currentTimeMillis()
 
-            firestore?.collection("images")?.document()?.set(contentDTO)
+            //파이어스토어로 올림
+            firestore?.collection("uid")?.document(uid)?.collection("images")?.document(imageFileName)?.set(contentDTO)
+
+
+            //프로필 사진 올리는 경로
+            // firestore?.collection("uid")?.document(uid)?.collection("images")?.document("profile")?.set(contentDTO)
 
             setResult(Activity.RESULT_OK)
 

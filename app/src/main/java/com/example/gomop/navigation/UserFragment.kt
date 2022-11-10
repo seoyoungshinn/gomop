@@ -1,6 +1,7 @@
 package com.example.gomop.navigation
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -73,11 +74,37 @@ class UserFragment : Fragment(){
             var contentDTOs : ArrayList<ContentDTO> = arrayListOf()
 
             init {
-                firestore?.collection("images")?.whereEqualTo("uid",uid)?.addSnapshotListener { querySnapshot, firebaseFirestore ->
+                //firestore?.collection("uid")?.document(uid.toString())?.collection("images")?.addSnapshotListener { querySnapshot, firebaseFirestore ->
+/*                firestore?.collection("images")?.whereEqualTo("uid",uid)?.addSnapshotListener { querySnapshot, firebaseFirestore ->
                     //Some times, This code return null of querySnapshot when it signout
                     if(querySnapshot == null) return@addSnapshotListener
                     //Get data
                     for(snapshot in querySnapshot.documents){
+                        contentDTOs.add(snapshot.toObject(ContentDTO::class.java)!!)
+                    }
+                    fragmentView?.account_tv_post_count?.text = contentDTOs.size.toString()
+                    notifyDataSetChanged()
+                }*/
+
+
+                firestore?.collection("uid")?.document(uid.toString())?.collection("images")?.orderBy("timestamp")?.addSnapshotListener { querySnapshot, firebaseFirestore ->
+                //firestore?.collection("images")?.whereEqualTo("uid",uid)?.addSnapshotListener { querySnapshot, firebaseFirestore ->
+                    //Some times, This code return null of querySnapshot when it signout
+
+/*                    파이어스토어면 웟분 말씀대로하시구, 파이어베이스면 내림차순은 없구요
+                    게시물 데이터노드에 타임스탬프값을 같이 저장해주신후에 orderbychild("timestamp")로
+                            하면 시간값에따라 오름차순 정렬이되구요. 이것을 리사이클러뷰에 받아오신뒤
+                            리사이클러뷰 함수중에 stackFromEnd와 reverselayout함수를 이용해서 역순으로
+                            뿌려주시는 방법으로 가능해요*/
+
+
+                    Log.d("로그 : snapshot",querySnapshot.toString())
+                    Log.d("로그 : firebaseFirestore",firebaseFirestore.toString())
+                    Log.d("로그 : querySnapshot.documents",querySnapshot?.documents.toString())
+                    if(querySnapshot == null) return@addSnapshotListener
+                    //Get data
+                    for(snapshot in querySnapshot.documents){
+                        Log.d("로그 : snapshot in querySnapshot.documents",snapshot.toString())
                         contentDTOs.add(snapshot.toObject(ContentDTO::class.java)!!)
                     }
                     fragmentView?.account_tv_post_count?.text = contentDTOs.size.toString()

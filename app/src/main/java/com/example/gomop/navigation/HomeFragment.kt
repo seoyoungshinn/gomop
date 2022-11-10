@@ -32,7 +32,10 @@ class HomeFragment : Fragment() {
         var contentDTOs: ArrayList<ContentDTO> = arrayListOf()
         var contentUidList: ArrayList<String> = arrayListOf()
         init {
-            firestore?.collection("images")?.orderBy("timestamp")
+            // var storageRef = storage?.reference?.child("uid")?.child(uid)?.child("images")
+            //firestore?.collection("uid")?.document(uid)?.collection("images")?.orderBy("timestamp")
+          //  firestore?.collection("images")?.orderBy("timestamp")
+            firestore?.collection("uid")?.document(uid.toString())?.collection("images")?.orderBy("timestamp")
                 ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                     contentDTOs.clear()
                     contentUidList.clear()
