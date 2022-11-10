@@ -8,6 +8,7 @@ import android.widget.Toast
 import com.example.gomop.databinding.ActivitySignUpBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 
 /*class SignUpActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,6 +22,8 @@ class SignUpActivity : AppCompatActivity() {
     private var _binding: ActivitySignUpBinding? = null
     private val binding get() = _binding!!
 
+    var firestore: FirebaseFirestore? = null
+    var uid : String? = null
     //private val binding = ActivitySignUpBinding.inflate(layoutInflater)
 
 
@@ -34,8 +37,11 @@ class SignUpActivity : AppCompatActivity() {
         _binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
         Log.d("auth",auth.toString())
+        uid = auth.currentUser?.uid
+        Log.d("uid",uid.toString())
 
         binding.btnSignUp.setOnClickListener {  //회원가입
             val email = binding.edtEmail.text.toString().trim()
@@ -82,8 +88,19 @@ class SignUpActivity : AppCompatActivity() {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "회원가입 성공", Toast.LENGTH_SHORT).show()
+
+                    //파이어베이스 Auth에 새로운 유저를 등록하는 일에 성공하면, 해당 유저의 정보를 fireBaseStorage에 저장한다.
+                    val id : String= email.split("@").get(0)
+                    Log.d("로그: id = ",id)
+                    val inputId : Map<String,String> = hashMapOf("id" to id)
+                    Log.d("로그 등록할 맵",inputId.toString())
                     val user = auth.currentUser
+                    uid = auth.currentUser?.uid
+                    Log.d("로그 새로부여된uid : ",uid.toString())
+                    Log.d("로그 새로 등록할 위치 : ",firestore?.collection("uid")?.document(uid!!).toString())
+                    firestore?.collection("uid")?.document(uid!!)?.set(inputId)//도큐먼트 생성
+
+                    Toast.makeText(this, "회원가입 성공", Toast.LENGTH_SHORT).show()
                     updateUI(user)
                 } else {
                     Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show()

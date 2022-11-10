@@ -91,6 +91,7 @@ class UserFragment : Fragment(){
                 //firestore?.collection("images")?.whereEqualTo("uid",uid)?.addSnapshotListener { querySnapshot, firebaseFirestore ->
                     //Some times, This code return null of querySnapshot when it signout
 
+                    //게시물 내림차순 구현해야함 ㅜㅜ
 /*                    파이어스토어면 웟분 말씀대로하시구, 파이어베이스면 내림차순은 없구요
                     게시물 데이터노드에 타임스탬프값을 같이 저장해주신후에 orderbychild("timestamp")로
                             하면 시간값에따라 오름차순 정렬이되구요. 이것을 리사이클러뷰에 받아오신뒤

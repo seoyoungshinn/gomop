@@ -16,14 +16,6 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         startActivity(Intent(this, SignUpActivity::class.java))
 
-/*
-        var storage: FirebaseStorage?
-        storage = FirebaseStorage.getInstance()
-        var storageRef = storage?.reference?.child("images")?.child("imageFileName")
-        Log.d("storage? ", storage.toString())
-        Log.d("storage?2 ", storage.reference?.toString())
-        Log.d("storage?3 ", storage.reference.child("images")?.toString())
-        Log.d("storage?4 ", storage.reference.child("uid")?.child("TarcIGTAwQMWBZijBiill1GUcm83").child("images").toString())
-*/
+
     }
 }
