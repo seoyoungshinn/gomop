@@ -1,4 +1,4 @@
-package com.example.gomop.navigation.model
+package com.example.gomop.DataClassObject
 
 data class ContentDTO(
     var explain: String? = null,

@@ -15,7 +15,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.gomop.MainActivity
 import com.example.gomop.R
 import com.example.gomop.SignUpActivity
-import com.example.gomop.navigation.model.ContentDTO
+import com.example.gomop.DataClassObject.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -64,12 +64,35 @@ class UserFragment : Fragment(){
             mainactivity?.toolbar_title_image?.visibility = View.GONE
             mainactivity?.toolbar_userEmail?.visibility = View.VISIBLE
             mainactivity?.toolbar_btn_back.visibility = View.VISIBLE
+
+
         }
 
 
         fragmentView?.account_recyclerview?.adapter = UserFragmentRecyclerViewAdapter()
         fragmentView?.account_recyclerview?.layoutManager = GridLayoutManager(activity, 3)
+
+        fragmentView?.account_iv_profile?.setOnClickListener {
+            Log.d("로그 : 프로필 이미지 누름","")
+            var photoPickerIntent = Intent(Intent.ACTION_PICK)
+            photoPickerIntent.type = "image/*"
+            activity?.startActivityForResult(photoPickerIntent,PICK_PROFILE_FROM_ALBUM) //10번으로 시작.. 뭔말이야이게..
+        }
+        ProfileImage() //프사받아오기
+
+
         return fragmentView
+    }
+
+    fun ProfileImage(){ //내 프로필의 프사 정보 받아오기 (데이터 베이스 내 profile에 저장되어있음)
+       // firestore?.collection("profileImages")?.document(uid!!)?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+        firestore?.collection("uid")?.document(uid.toString())?.collection("images")?.document("profile")?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+            if(documentSnapshot == null) return@addSnapshotListener
+            if(documentSnapshot.data != null){
+                var url = documentSnapshot?.data!!["imageUrl"]
+                Glide.with(requireActivity()).load(url).apply(RequestOptions().circleCrop()).into(fragmentView?.account_iv_profile!!)
+            }
+        }
     }
         inner class UserFragmentRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
             var contentDTOs : ArrayList<ContentDTO> = arrayListOf()

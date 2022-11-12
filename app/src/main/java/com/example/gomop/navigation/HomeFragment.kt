@@ -9,9 +9,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.gomop.R
-import com.example.gomop.navigation.model.ContentDTO
+import com.example.gomop.DataClassObject.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import kotlinx.android.synthetic.main.item_detail.view.*
 
@@ -24,18 +25,18 @@ class HomeFragment : Fragment() {
 
         firestore = FirebaseFirestore.getInstance()
         uid = FirebaseAuth.getInstance().currentUser?.uid
-        view.detailviewfragment_recyclerview.adapter = DetailViewRecyclerViewAdapter()
-        view.detailviewfragment_recyclerview.layoutManager = LinearLayoutManager(activity)
+        view.homefragment_recyclerview.adapter = HomeRecyclerViewAdapter()
+        view.homefragment_recyclerview.layoutManager = LinearLayoutManager(activity)
         return view
     }
-    inner class DetailViewRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    inner class HomeRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         var contentDTOs: ArrayList<ContentDTO> = arrayListOf()
         var contentUidList: ArrayList<String> = arrayListOf()
         init {
             // var storageRef = storage?.reference?.child("uid")?.child(uid)?.child("images")
             //firestore?.collection("uid")?.document(uid)?.collection("images")?.orderBy("timestamp")
           //  firestore?.collection("images")?.orderBy("timestamp")
-            firestore?.collection("uid")?.document(uid.toString())?.collection("images")?.orderBy("timestamp")
+            firestore?.collection("uid")?.document(uid.toString())?.collection("images")?.orderBy("timestamp", Query.Direction.DESCENDING)
                 ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                     contentDTOs.clear()
                     contentUidList.clear()
@@ -84,6 +85,24 @@ class HomeFragment : Fragment() {
                 //This is unlike status
                 viewholder.detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_launcher_foreground)
             }
+
+
+            viewholder.detailviewitem_profile_image.setOnClickListener {
+                var fragment = UserFragment()
+                var bundle = Bundle()
+                bundle.putString("destinationUid",contentDTOs[position].uid)
+                bundle.putString("userId",contentDTOs[position].userId)
+                fragment.arguments = bundle
+                activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.main_content,fragment)?.commit()
+            }
+            viewholder.detailviewitem_comment_imageview.setOnClickListener{ v ->
+              //  var intent = Intent(v.context,CommentActivity::class.java)
+              //  intent.putExtra("contentUid",contentUidList[position])
+              //  intent.putExtra("destinationUid",contentDTOs[position].uid)
+               // startActivity(intent)
+            }
+
+
         }
         /*
         fun favoriteEvent(position: Int) {

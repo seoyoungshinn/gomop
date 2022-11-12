@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -29,18 +30,21 @@
         android:gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="50dp">
+
         <ImageView
             android:id="@+id/detailviewitem_favorite_imageview"
-            android:src="@drawable/ic_launcher_foreground"
-            android:layout_margin="10dp"
             android:layout_width="35dp"
-            android:layout_height="35dp"/>
+            android:layout_height="35dp"
+            android:layout_margin="10dp"
+            android:src="@drawable/heart_black"
+             />
 
         <ImageView
             android:id="@+id/detailviewitem_comment_imageview"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:src="@drawable/ic_launcher_foreground" />
+            android:src="@drawable/chat"
+            />
     </LinearLayout>
     <TextView
         android:id="@+id/detailviewitem_favoritecounter_textview"

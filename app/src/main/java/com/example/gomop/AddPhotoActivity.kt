@@ -8,8 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.example.gomop.databinding.ActivityAddPhotoBinding
-import com.example.gomop.databinding.ActivitySignUpBinding
-import com.example.gomop.navigation.model.ContentDTO
+import com.example.gomop.DataClassObject.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
