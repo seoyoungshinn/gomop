@@ -19,6 +19,9 @@
             android:name=".AddPhotoActivity"
             android:exported="false" />
         <activity
+            android:name=".navigation.CommentActivity"
+            android:exported="false" />
+        <activity
             android:name=".UserHomeActivity"
             android:exported="false" />
         <activity

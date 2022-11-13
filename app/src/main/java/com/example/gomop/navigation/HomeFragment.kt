@@ -1,6 +1,8 @@
 package com.example.gomop.navigation
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -74,9 +76,9 @@ class HomeFragment : Fragment() {
             Glide.with(holder.itemView.context).load(contentDTOs!![position].imageUrl)
                 .into(viewholder.detailviewitem_profile_image)
             //This code is when the button is clicked
-            //viewholder.detailviewitem_favorite_imageview.setOnClickListener {
-                //favoriteEvent(position)
-            //}
+            viewholder.detailviewitem_favorite_imageview.setOnClickListener {
+                favoriteEvent(position)
+            }
             //This code is when the page is loaded
             if(contentDTOs!![position].favorites.containsKey(uid)){
                 //This is like status
@@ -96,15 +98,15 @@ class HomeFragment : Fragment() {
                 activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.main_content,fragment)?.commit()
             }
             viewholder.detailviewitem_comment_imageview.setOnClickListener{ v ->
-              //  var intent = Intent(v.context,CommentActivity::class.java)
-              //  intent.putExtra("contentUid",contentUidList[position])
-              //  intent.putExtra("destinationUid",contentDTOs[position].uid)
-               // startActivity(intent)
+                var intent = Intent(v.context,CommentActivity::class.java)
+                intent.putExtra("contentUid",contentUidList[position])
+                intent.putExtra("destinationUid",contentDTOs[position].uid)
+                startActivity(intent)
             }
 
 
         }
-        /*
+
         fun favoriteEvent(position: Int) {
             var tsDoc = firestore?.collection("images")?.document(contentUidList[position])
             firestore?.runTransaction { transaction ->
@@ -112,15 +114,15 @@ class HomeFragment : Fragment() {
                 var contentDTO = transaction.get(tsDoc!!).toObject(ContentDTO::class.java)
                 if (contentDTO!!.favorites.containsKey(uid)) {
                     //When the button is clicked
-                    contentDTO?.favoriteCount = contentDTO?.favoriteCount - 1
+                    contentDTO?.favoriteCount = contentDTO.favoriteCount?.minus(1)
                     contentDTO?.favorites.remove(uid)
                 } else {
                     //When the button is no clicked
-                    contentDTO?.favoriteCount = contentDTO?.favoriteCount + 1
+                    contentDTO?.favoriteCount = contentDTO?.favoriteCount?.plus(1)
                     contentDTO?.favorites[uid!!] = true
                 }
                 transaction.set(tsDoc,contentDTO)
             }
-        }*/
+        }
     }
 }
