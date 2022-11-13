@@ -80,10 +80,10 @@ class HomeFragment : Fragment() {
             //This code is when the page is loaded
             if(contentDTOs!![position].favorites.containsKey(uid)){
                 //This is like status
-                viewholder.detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_launcher_foreground)
+                viewholder.detailviewitem_favorite_imageview.setImageResource(R.drawable.heart_black)
             }else{
                 //This is unlike status
-                viewholder.detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_launcher_foreground)
+                viewholder.detailviewitem_favorite_imageview.setImageResource(R.drawable.heart_white)
             }
 
 
