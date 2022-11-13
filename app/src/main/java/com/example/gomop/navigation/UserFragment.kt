@@ -65,7 +65,6 @@ class UserFragment : Fragment(){
             mainactivity?.toolbar_userEmail?.visibility = View.VISIBLE
             mainactivity?.toolbar_btn_back.visibility = View.VISIBLE
 
-
         }
 
 

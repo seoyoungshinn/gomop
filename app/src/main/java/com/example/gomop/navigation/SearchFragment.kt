@@ -1,23 +1,30 @@
 package com.example.gomop.navigation
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL
 import androidx.recyclerview.widget.RecyclerView
+import com.example.gomop.AddPhotoActivity
 import com.example.gomop.MyAdapter
 import com.example.gomop.R
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.android.synthetic.main.item_detail.view.*
 
 class SearchFragment : Fragment() {
 
@@ -67,6 +74,16 @@ class SearchFragment : Fragment() {
                                 val theNickName = i.data["nickname"] //필드 데이터
                                 textv1.text =
                                     theNickName.toString()   //text1에 읽은 nicknmae 필드 데이터 입력
+
+
+                                var fragment = UserFragment()
+                                var bundle = Bundle()
+                                var uid = theNickName.toString()
+                                bundle.putString("destinationUid",uid)
+                               fragment.arguments = bundle
+
+
+                                activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.main_content,fragment)?.commit()
 
                                 afound = true  //찾았다
 
