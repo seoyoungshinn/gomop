@@ -56,14 +56,16 @@ class UserFragment : Fragment(){
         else{
             //Other User page
             fragmentView?.account_btn_follow_signout?.text = getString(R.string.follow)
-            var mainactivity = (activity as MainActivity)
+
+            //검색할 때 오류나서 주석처리했으
+            /*var mainactivity = (activity as MainActivity)
             mainactivity?.toolbar_userEmail?.text = arguments?.getString("userId")
             mainactivity?.toolbar_btn_back?.setOnClickListener {
                 mainactivity.bottom_navigation.selectedItemId = R.id.action_home
             }
             mainactivity?.toolbar_title_image?.visibility = View.GONE
             mainactivity?.toolbar_userEmail?.visibility = View.VISIBLE
-            mainactivity?.toolbar_btn_back.visibility = View.VISIBLE
+            mainactivity?.toolbar_btn_back.visibility = View.VISIBLE*/
 
         }
 
