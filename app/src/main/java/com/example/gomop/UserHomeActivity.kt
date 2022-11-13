@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.gomop.navigation.*
@@ -21,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
+import kotlinx.android.synthetic.main.activity_user_home.*
 
 class UserHomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSelectedListener {
     private lateinit var binding : ActivityUserHomeBinding
@@ -65,7 +67,7 @@ class UserHomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationIt
 
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-
+        setToolbarDefalut()
         when(item.itemId){
             R.id.action_home->{
                 var HomeFragment = HomeFragment()
@@ -95,17 +97,22 @@ class UserHomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationIt
                 return true
             }
             R.id.action_account->{
-                var userFragment = UserFragment()
+                var UserFragment = UserFragment()
                 var bundle = Bundle()
                 var uid = FirebaseAuth.getInstance().currentUser?.uid
                 bundle.putString("destinationUid",uid)
-                userFragment.arguments = bundle
+                UserFragment.arguments = bundle
 
-                supportFragmentManager.beginTransaction().replace(R.id.main_content,userFragment).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.main_content,UserFragment).commit()
                 return true
             }
         }
         return false
+    }
+    fun setToolbarDefalut(){
+        toolbar_userEmail.visibility = View.GONE
+        toolbar_btn_back.visibility = View.GONE
+        toolbar_title_image.visibility = View.VISIBLE
     }
 
 }
