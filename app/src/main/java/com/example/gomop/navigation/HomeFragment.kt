@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.gomop.R
 import com.example.gomop.DataClassObject.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
@@ -75,6 +76,7 @@ class HomeFragment : Fragment() {
             //ProfileImage
             Glide.with(holder.itemView.context).load(contentDTOs!![position].imageUrl)
                 .into(viewholder.detailviewitem_profile_image)
+
             //This code is when the button is clicked
             viewholder.detailviewitem_favorite_imageview.setOnClickListener {
                 favoriteEvent(position)
@@ -106,15 +108,16 @@ class HomeFragment : Fragment() {
 
 
         }
-
+        // 좋아요
         fun favoriteEvent(position: Int) {
-            var tsDoc = firestore?.collection("images")?.document(contentUidList[position])
+            var tsDoc = firestore?.collection("uid")?.document(uid.toString())?.collection("images")?.document(contentUidList[position])
+            //var tsDoc = firestore?.collection("images")?.document(contentUidList[position])
             firestore?.runTransaction { transaction ->
                 var uid = FirebaseAuth.getInstance().currentUser?.uid
                 var contentDTO = transaction.get(tsDoc!!).toObject(ContentDTO::class.java)
                 if (contentDTO!!.favorites.containsKey(uid)) {
                     //When the button is clicked
-                    contentDTO?.favoriteCount = contentDTO.favoriteCount?.minus(1)
+                    contentDTO?.favoriteCount = contentDTO?.favoriteCount?.minus(1)
                     contentDTO?.favorites.remove(uid)
                 } else {
                     //When the button is no clicked
