@@ -11,19 +11,23 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.example.gomop.DataClassObject.AlarmDTO
 import com.example.gomop.R
 import com.example.gomop.DataClassObject.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.fragment_home.view.*
+import kotlinx.android.synthetic.main.fragment_user.view.*
 import kotlinx.android.synthetic.main.item_detail.view.*
 
 class HomeFragment : Fragment() {
     var firestore: FirebaseFirestore? = null
     var uid : String? = null
+    var fragmentView : View? = null
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
+
         var view = LayoutInflater.from(activity).inflate(R.layout.fragment_home, container, false)
 
         firestore = FirebaseFirestore.getInstance()
@@ -33,6 +37,7 @@ class HomeFragment : Fragment() {
         return view
     }
     inner class HomeRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
         var contentDTOs: ArrayList<ContentDTO> = arrayListOf()
         var contentUidList: ArrayList<String> = arrayListOf()
         init {
@@ -61,6 +66,20 @@ class HomeFragment : Fragment() {
         override fun getItemCount(): Int {
             return contentDTOs.size
         }
+
+        fun ProfileImage(){ //내 프로필의 프사 정보 받아오기 (데이터 베이스 내 profile에 저장되어있음)
+            firestore?.collection("profileImages")?.document(uid!!)?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+            //firestore?.collection("uid")?.document(uid.toString())?.collection("images")?.document("profile")?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+                if(documentSnapshot == null) return@addSnapshotListener
+                if(documentSnapshot.data != null){
+                    var url = documentSnapshot?.data!!["image"] // image
+                    Glide.with(requireActivity()).load(url).apply(RequestOptions().circleCrop()).into(view?.detailviewitem_profile_image!!)
+
+                }
+            }
+        }
+
+
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             var viewholder = (holder as CustomViewHolder).itemView
             //UserId
@@ -74,8 +93,9 @@ class HomeFragment : Fragment() {
             viewholder.detailviewitem_favoritecounter_textview.text =
                 "Likes " + contentDTOs!![position].favoriteCount
             //ProfileImage
-            Glide.with(holder.itemView.context).load(contentDTOs!![position].imageUrl)
-                .into(viewholder.detailviewitem_profile_image)
+            ProfileImage()
+            /*Glide.with(holder.itemView.context).load(contentDTOs!![position].imageUrl)
+                .into(viewholder.detailviewitem_profile_image)*/
 
             //This code is when the button is clicked
             viewholder.detailviewitem_favorite_imageview.setOnClickListener {
@@ -119,13 +139,26 @@ class HomeFragment : Fragment() {
                     //When the button is clicked
                     contentDTO?.favoriteCount = contentDTO?.favoriteCount?.minus(1)
                     contentDTO?.favorites.remove(uid)
+                    //favoriteAlarm(contentDTOs[position].uid!!)
                 } else {
                     //When the button is no clicked
                     contentDTO?.favoriteCount = contentDTO?.favoriteCount?.plus(1)
                     contentDTO?.favorites[uid!!] = true
+                    favoriteAlarm(contentDTOs[position].uid!!)
                 }
                 transaction.set(tsDoc,contentDTO)
             }
         }
+
+        fun favoriteAlarm(detinationUid:String){
+            var alarmDTO = AlarmDTO()
+            alarmDTO.destinationUid = detinationUid
+            alarmDTO.userId = FirebaseAuth.getInstance().currentUser?.email
+            alarmDTO.uid = FirebaseAuth.getInstance().currentUser?.uid
+            alarmDTO.kind = 0
+            alarmDTO.timestamp = System.currentTimeMillis()
+            FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+        }
+
     }
 }

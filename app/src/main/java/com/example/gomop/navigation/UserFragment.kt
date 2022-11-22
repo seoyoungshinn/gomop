@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.example.gomop.DataClassObject.AlarmDTO
 import com.example.gomop.R
 import com.example.gomop.SignUpActivity
 import com.example.gomop.DataClassObject.ContentDTO
@@ -59,6 +60,8 @@ class UserFragment : Fragment(){
 
 
 
+
+
         //mainactivity?.toolbar_userEmail?.text = arguments?.getString(theNickName.toString())
         mainactivity?.toolbar_btn_back?.setOnClickListener {
             mainactivity.bottom_navigation.selectedItemId = R.id.action_home
@@ -67,8 +70,20 @@ class UserFragment : Fragment(){
         mainactivity?.toolbar_userEmail?.visibility = View.VISIBLE
         mainactivity?.toolbar_btn_back.visibility = View.VISIBLE
 
+        fragmentView?.account_recyclerview?.adapter = UserFragmentRecyclerViewAdapter()
+        fragmentView?.account_recyclerview?.layoutManager = GridLayoutManager(activity, 3)
+
+
+
+
 
         if(uid == currentUserUid){
+            fragmentView?.account_iv_profile?.setOnClickListener {
+                Log.d("로그 : 프로필 이미지 누름","")
+                var photoPickerIntent = Intent(Intent.ACTION_PICK)
+                photoPickerIntent.type = "image/*"
+                activity?.startActivityForResult(photoPickerIntent,PICK_PROFILE_FROM_ALBUM) //10번으로 시작.. 뭔말이야이게..
+            }
             //My page
             fbdb.collection("uid") //첫번째칸 컬렉션 (player 부분 필드데이터를 전부 읽음)
                 .get()
@@ -97,6 +112,9 @@ class UserFragment : Fragment(){
                 activity?.finish()
                 startActivity(Intent(activity,SignUpActivity::class.java))
                 auth?.signOut()
+
+
+
 
             }
         }
@@ -140,20 +158,15 @@ class UserFragment : Fragment(){
             fragmentView?.account_btn_follow_signout?.setOnClickListener{
                 requestFollow()
             }
+
+
         }
 
 
-        fragmentView?.account_recyclerview?.adapter = UserFragmentRecyclerViewAdapter()
-        fragmentView?.account_recyclerview?.layoutManager = GridLayoutManager(activity, 3)
 
-        fragmentView?.account_iv_profile?.setOnClickListener {
-            Log.d("로그 : 프로필 이미지 누름","")
-            var photoPickerIntent = Intent(Intent.ACTION_PICK)
-            photoPickerIntent.type = "image/*"
-            activity?.startActivityForResult(photoPickerIntent,PICK_PROFILE_FROM_ALBUM) //10번으로 시작.. 뭔말이야이게..
-        }
         ProfileImage() //프사받아오기
         FollowerAndFollowing()
+
 
 
         return fragmentView
@@ -215,7 +228,7 @@ class UserFragment : Fragment(){
                 followDTO = FollowDTO()
                 followDTO!!.followerCount = 1
                 followDTO!!.followers[currentUserUid!!] = true
-
+                followerAlarm(uid!!)
                 transaction.set(tsDocFollower,followDTO!!)
                 return@runTransaction
             }
@@ -228,6 +241,7 @@ class UserFragment : Fragment(){
                 //It add my foller when i don't follow a thir person
                 followDTO!!.followerCount = followDTO!!.followerCount + 1
                 followDTO!!.followers[currentUserUid!!] = true
+                followerAlarm(uid!!)
             }
             transaction.set(tsDocFollower,followDTO!!)
             return@runTransaction
@@ -235,17 +249,29 @@ class UserFragment : Fragment(){
 
     }
 
+    fun followerAlarm(destinationUid:String){
+        var alarmDTO = AlarmDTO()
+        alarmDTO.destinationUid = destinationUid
+        alarmDTO.userId = auth?.currentUser?.email
+        alarmDTO.uid = auth?.currentUser?.uid
+        alarmDTO.kind = 2
+        alarmDTO.timestamp = System.currentTimeMillis()
+        FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+    }
+
     fun ProfileImage(){ //내 프로필의 프사 정보 받아오기 (데이터 베이스 내 profile에 저장되어있음)
-        //firestore?.collection("profileImages")?.document(uid!!)?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
-          firestore?.collection("uid")?.document(uid.toString())?.collection("images")?.document("profile")?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+        firestore?.collection("profileImages")?.document(uid!!)?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+          //firestore?.collection("uid")?.document(uid.toString())?.collection("images")?.document("profile")?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
             if(documentSnapshot == null) return@addSnapshotListener
             if(documentSnapshot.data != null){
-                var url = documentSnapshot?.data!!["imageUrl"] // image
+                var url = documentSnapshot?.data!!["image"] // image
                 Glide.with(requireActivity()).load(url).apply(RequestOptions().circleCrop()).into(fragmentView?.account_iv_profile!!)
 
             }
         }
     }
+
+
         inner class UserFragmentRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
             var contentDTOs : ArrayList<ContentDTO> = arrayListOf()
 
