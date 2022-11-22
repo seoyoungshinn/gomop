@@ -20,17 +20,23 @@ import com.example.gomop.DataClassObject.ContentDTO
 import com.example.gomop.DataClassObject.FollowDTO
 import com.example.gomop.UserHomeActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_user_home.*
 import kotlinx.android.synthetic.main.fragment_user.view.*
 
 class UserFragment : Fragment(){
+    val fbdb = Firebase.firestore
     var fragmentView : View? = null
     var firestore : FirebaseFirestore? = null
     var uid :String? = null
     var auth : FirebaseAuth?= null
     var currentUserUid : String? = null
+
     companion object{
         var PICK_PROFILE_FROM_ALBUM = 10
     }
@@ -45,25 +51,86 @@ class UserFragment : Fragment(){
         uid = arguments?.getString("destinationUid")
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
+
         currentUserUid = auth?.currentUser?.uid
+
+        var mainactivity = (activity as UserHomeActivity)
+
+
+
+
+        //mainactivity?.toolbar_userEmail?.text = arguments?.getString(theNickName.toString())
+        mainactivity?.toolbar_btn_back?.setOnClickListener {
+            mainactivity.bottom_navigation.selectedItemId = R.id.action_home
+        }
+        mainactivity?.toolbar_title_image?.visibility = View.GONE
+        mainactivity?.toolbar_userEmail?.visibility = View.VISIBLE
+        mainactivity?.toolbar_btn_back.visibility = View.VISIBLE
+
 
         if(uid == currentUserUid){
             //My page
+            fbdb.collection("uid") //첫번째칸 컬렉션 (player 부분 필드데이터를 전부 읽음)
+                .get()
+                .addOnCompleteListener { task ->
+
+                    var afound = false  //데이터 찾지 못했을때
+
+                    if (task.isSuccessful) { //제대로 접근 했다면
+                        //Log.d("1","uid읽기성공")
+                        for (i in task.result!!) {
+                            if (i.id == uid) { //입력한 데이터와 같은 이름이 있다면(player id 부분)
+                                //Log.d("2","${uid} 문서읽기 완료")
+                                val theNickName = i.data["id"] //필드 데이터
+                                /*textv1.text =
+                                    theNickName.toString()   //text1에 읽은 nicknmae 필드 데이터 입력*/
+                                //Log.d("3",theNickName.toString())
+                                mainactivity?.toolbar_userEmail?.text = theNickName.toString()
+
+
+                            } //if (task.
+                        } //for
+                    }
+                }
             fragmentView?.account_btn_follow_signout?.text = "LOGOUT"
             fragmentView?.account_btn_follow_signout?.setOnClickListener {
                 activity?.finish()
                 startActivity(Intent(activity,SignUpActivity::class.java))
                 auth?.signOut()
+
             }
         }
         else{
             //Other User page
+
             fragmentView?.account_btn_follow_signout?.text = getString(R.string.follow)
 
             //검색할 때 오류나서 주석처리했으
             // 이제 오류 안뜸 - 동주
             var mainactivity = (activity as UserHomeActivity)
-            mainactivity?.toolbar_userEmail?.text = arguments?.getString("userID")
+            fbdb.collection("uid") //첫번째칸 컬렉션 (player 부분 필드데이터를 전부 읽음)
+                .get()
+                .addOnCompleteListener { task ->
+
+                    var afound = false  //데이터 찾지 못했을때
+
+                    if (task.isSuccessful) { //제대로 접근 했다면
+                        //Log.d("1","uid읽기성공")
+                        for (i in task.result!!) {
+                            if (i.id == uid) { //입력한 데이터와 같은 이름이 있다면(player id 부분)
+                                //Log.d("2","${uid} 문서읽기 완료")
+                                val theNickName = i.data["id"] //필드 데이터
+                                /*textv1.text =
+                                    theNickName.toString()   //text1에 읽은 nicknmae 필드 데이터 입력*/
+                                //Log.d("3",theNickName.toString())
+                                mainactivity?.toolbar_userEmail?.text = theNickName.toString()
+
+
+                            } //if (task.
+                        } //for
+                    }
+                }
+            //mainactivity?.toolbar_userEmail?.text = arguments?.getString("userID")
             mainactivity?.toolbar_btn_back?.setOnClickListener {
                 mainactivity.bottom_navigation.selectedItemId = R.id.action_home
             }
