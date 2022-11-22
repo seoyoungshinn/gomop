@@ -17,11 +17,15 @@ import com.example.gomop.DataClassObject.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import kotlinx.android.synthetic.main.fragment_user.view.*
+import kotlinx.android.synthetic.main.item_comment.view.*
 import kotlinx.android.synthetic.main.item_detail.view.*
 
 class HomeFragment : Fragment() {
+    val fbdb = Firebase.firestore
     var firestore: FirebaseFirestore? = null
     var uid : String? = null
     var fragmentView : View? = null
@@ -80,10 +84,34 @@ class HomeFragment : Fragment() {
         }
 
 
+
+
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             var viewholder = (holder as CustomViewHolder).itemView
             //UserId
-            viewholder.detailviewitem_profile_textview.text = contentDTOs!![position].userId
+
+            fbdb.collection("uid") //첫번째칸 컬렉션 (player 부분 필드데이터를 전부 읽음)
+                .get()
+                .addOnCompleteListener { task ->
+
+                    var afound = false  //데이터 찾지 못했을때
+
+                    if (task.isSuccessful) { //제대로 접근 했다면
+
+                        for (i in task.result!!) {
+
+                            if (i.id == uid) { //입력한 데이터와 같은 이름이 있다면(player id 부분)
+
+                                val theNickName = i.data["id"] //필드 데이터
+                                val str_0 = theNickName.toString()
+                                viewholder.detailviewitem_profile_textview.text = str_0
+
+                            } //if (task.
+                        } //for
+                    }
+                }
+
+
             //Image
             Glide.with(holder.itemView.context).load(contentDTOs!![position].imageUrl)
                 .into(viewholder.detailviewitem_imageview_content)
