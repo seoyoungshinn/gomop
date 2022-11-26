@@ -48,6 +48,8 @@
 
     <!-- Toolbar -->
     <string name="back">Back</string>
+    <string name="req_permission_reason">App requires %1$s permission. Could you allow the permission?</string>
+    <string name="no_permission"><![CDATA[>App has no permission %1$s. Some features would not work correctly.]]></string>
 
     <!-- etc -->
     <item name="visible" type="id" />
