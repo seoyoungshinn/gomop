@@ -1,6 +1,5 @@
 package com.example.gomop
 
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
@@ -13,7 +12,6 @@ import androidx.core.content.ContextCompat
 import com.example.gomop.navigation.*
 import com.example.gomop.databinding.ActivityUserHomeBinding
 import com.example.gomop.navigation.AlarmFragment
-import com.example.gomop.navigation.HomeFragment
 import com.example.gomop.navigation.SearchFragment
 import com.example.gomop.navigation.UserFragment
 import com.google.android.gms.tasks.Task
