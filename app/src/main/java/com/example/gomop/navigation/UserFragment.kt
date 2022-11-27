@@ -309,7 +309,7 @@ class UserFragment : Fragment(){
                 }
 
 
-                //팔로워, 팔로잉 정보 받아오기
+/*                //팔로워, 팔로잉 정보 받아오기
                 var snapshotData :Map<String,Any>
                 var followings : Map<String,String>
                 var followers : Map<String,String>
@@ -325,7 +325,7 @@ class UserFragment : Fragment(){
                     }
                     notifyDataSetChanged()
                 }
-                Log.d("로그 팔로워dtr: ",dtr.toString())
+                Log.d("로그 팔로워dtr: ",dtr.toString())*/
 
                 //추가해야할작업 : 팔로잉/팔로워 수 받아서 프래그먼트에 표시
                 //notifyDataSetChanged() 처리 (굳이안해도될꺼같긴한데) 일단 지금은 새로고침 해야 업데이트 되게 구현해놓았음
