@@ -183,7 +183,8 @@ class LocationFragment : Fragment() {
         marker.markerType = MapPOIItem.MarkerType.BluePin
         marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
 
-        mapView.addPOIItem(marker)
+        if ( MyLocation.lat != 0.0)
+            mapView.addPOIItem(marker)
     }
 
 

@@ -28,6 +28,7 @@ import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_user_home.*
 import kotlinx.android.synthetic.main.fragment_user.view.*
@@ -365,11 +366,17 @@ class UserFragment : Fragment(){
                     contentDTOs.clear()
                     contentUidList.clear()
                     if(querySnapshot == null) return@addSnapshotListener
+
+/*                    for(snapshot in querySnapshot.documents){
+                        contentDTOs.add(snapshot.toObject(ContentDTO::class.java)!!)
+                    }*/
+
                     for (snapshot in querySnapshot!!.documents) {
                         var item = snapshot.toObject(ContentDTO::class.java)
                         contentDTOs.add(item!!)
                         contentUidList.add(snapshot.id)
                     }
+                    fragmentView?.account_tv_post_count?.text = contentDTOs.size.toString()
                     notifyDataSetChanged()
                 }
         }
