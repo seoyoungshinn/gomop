@@ -86,28 +86,26 @@ class CommentActivity : AppCompatActivity() {
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             var view = holder.itemView
 
-            fbdb.collection("uid") //첫번째칸 컬렉션 (player 부분 필드데이터를 전부 읽음)
+            /*fbdb.collection("uid") //첫번째칸 컬렉션 (player 부분 필드데이터를 전부 읽음)
                 .get()
                 .addOnCompleteListener { task ->
-
                     var afound = false  //데이터 찾지 못했을때
-
                     if (task.isSuccessful) { //제대로 접근 했다면
-
                         for (i in task.result!!) {
-
                             if (i.id == uid) { //입력한 데이터와 같은 이름이 있다면(player id 부분)
-
                                 val theNickName = i.data["id"] //필드 데이터
                                 val str_0 = theNickName.toString()
                                 view.commentviewitem_textview_profile.text = str_0
-
                             } //if (task.
                         } //for
                     }
-                }
+                }*/
+            var email : String? = comments[position].userId
+            var splitedId :String = email!!.split("@").get(0)
+
+
             view.commentviewitem_textview_comment.text = comments[position].comment
-            view.commentviewitem_textview_profile.text = comments[position].userId
+            view.commentviewitem_textview_profile.text = splitedId
 
             FirebaseFirestore.getInstance()
                 .collection("profileImages")
