@@ -449,7 +449,7 @@ class UserFragment : Fragment(){
                 favoriteEvent(position)
             }
             //This code is when the page is loaded
-            if(contentDTOs!![position].favorites.containsKey(uid)){
+            if(contentDTOs!![position].favorites.containsKey(currentUserUid)){
                 //This is like status
                 viewholder.detailviewitem_favorite_imageview.setImageResource(R.drawable.heart_black)
             }else{
