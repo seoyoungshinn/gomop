@@ -98,8 +98,12 @@ class UserHomeActivity : AppCompatActivity(),BottomNavigationView.OnNavigationIt
         setToolbarDefalut()
         when(item.itemId){
             R.id.action_home->{
-                var HomeFragment = HomeFragment()
+               /* var HomeFragment = HomeFragment()
                 supportFragmentManager.beginTransaction().replace(R.id.main_content,HomeFragment).commit()
+               */
+                var LocationFragment = LocationFragment()
+                supportFragmentManager.beginTransaction().replace(R.id.main_content,LocationFragment).commit()
+
                 return true
             }
             R.id.action_search->{

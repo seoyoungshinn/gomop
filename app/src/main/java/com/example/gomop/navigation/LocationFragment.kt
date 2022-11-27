@@ -1,38 +1,42 @@
-package com.example.gomop
+package com.example.gomop.navigation
 
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Base64
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.gomop.DataClassObject.FollowDTO
 import com.example.gomop.DataClassObject.LocationDTO
 import com.example.gomop.DataClassObject.MyLocation
-import com.example.gomop.databinding.ActivityMainBinding
+import com.example.gomop.MyAdapter
+import com.example.gomop.R
+import com.example.gomop.databinding.FragmentLocationBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.fragment_user.view.*
 import net.daum.mf.map.api.MapPOIItem
 import net.daum.mf.map.api.MapPoint
-//import net.daum.mf.map.api.MapView
-import java.security.MessageDigest
+import net.daum.mf.map.api.MapView
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class MainActivity : AppCompatActivity() {
+class LocationFragment : Fragment() {
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    private lateinit var viewManager: RecyclerView.LayoutManager
 
+    val fbdb = Firebase.firestore //파이어베이스.파이어스토어 설정
 
-
-
-    private lateinit var binding :ActivityMainBinding
-
-    //여기1/3
- /*   private val TAG = "SOL_LOG"
 
     //FireBase관련
     private var auth : FirebaseAuth? = null     //FireBase Auth
@@ -45,47 +49,55 @@ class MainActivity : AppCompatActivity() {
     lateinit var followingArray : Array<String?>
     lateinit var locationDTOArray : Array<LocationDTO?>
 
-    lateinit var mapView :MapView
-*/
-
-/*    0. 변경사항 -> DTO (ID,UID,X,Y,TIMEDATA)
-    ㅇ 1. 내위치 마커추가 (함수화)
-    o 2. 내 팔로워 정보를 모두 받아온다음에, for 함수 돌면서 팔로잉 수 크기의 DTO배열 만듦
-    3. DTO배열마다 마커 추가*/
+    lateinit var mapView : MapView
+    //lateinit var mapViewContainer: ViewGroup
 
 
+    lateinit var binding: FragmentLocationBinding
+    var currentUserUid : String? = null
 
-    @RequiresApi(Build.VERSION_CODES.P)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+
+    override fun onCreateView(inflater: LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?): View? {
+        //var view = LayoutInflater.from(activity).inflate(R.layout.fragment_location,container,false)
+      //  val binding = FragmentLocationBinding.inflate(inflater, container, false)
+
+        viewManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, true)
+        // 2
+        viewAdapter = MyAdapter()
+
+
+
+
+        binding = FragmentLocationBinding.inflate(layoutInflater)
         val view = binding.root
-        setContentView(view)
-
-        //여기2
-       /* mapView = MapView(this)
-
+        mapView = MapView(view.context)
+        binding.clKakaoMapView.addView (mapView)
 
         //FireBase환경세팅
         Log.d("로그 firebase","파이어베이스 환경세팅")
         auth = Firebase.auth
-        firestore = FirebaseFirestore.getInstance()
-        firebaseLogin()                         //파이어베이스 로그인
+        //firestore = FirebaseFirestore.getInstance()
+        firebaseLogin()                         //파이어베이스 접근
         uid = FirebaseAuth.getInstance().currentUser?.uid
         Log.d("로그 firebase","$uid")
-*/
 
-       // val binding = ActivityMainBinding.inflate(layoutInflater)
-        startActivity(Intent(this, SignUpActivity::class.java))
-    }
+ //       uid = arguments?.getString("destinationUid")
+        firestore = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
+
+        currentUserUid = auth?.currentUser?.uid
 
 
-    //여기3
-/*
+        return view
+    }  //End of onCreate()
+
 
     //팔로잉 uid 배열 생성
     fun getFollowers()  {
         //var followings :MutableMap<String,Boolean> = HashMap()
+        firestore = FirebaseFirestore.getInstance()
+        uid = FirebaseAuth.getInstance().currentUser?.uid
+
         firestore?.collection("users")?.document(uid!!)?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
             if(documentSnapshot == null) return@addSnapshotListener
             var followDTO = documentSnapshot.toObject(FollowDTO::class.java)
@@ -123,7 +135,7 @@ class MainActivity : AppCompatActivity() {
                 var userInfo = documentSnapshot.toObject(LocationDTO::class.java)
                 //locationDTOArray[i]?.uid = requsetUid
                 locationDTOArray[i]  = userInfo
-                Log.d("로그, LocationDTOArray ",locationDTOArray[i].toString())
+                Log.d("로그 in Frag, LocationDTOArray ",locationDTOArray[i].toString())
                 i++
                 if (userInfo != null) {
                     addOthersMarker(userInfo.lat, userInfo.lon, userInfo.id, mapView)
@@ -135,39 +147,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addOthersMarker(lat:Double, lon:Double, id:String,mapView:MapView) {
-  //        val mapView = MapView(this)
- //       binding.clKakaoMapView.addView(mapView)
+        //        val mapView = MapView(this)
+        //       binding.clKakaoMapView.addView(mapView)
 
 
-            //내 위치 좌표를 받아온다
-            val mapPoint = MapPoint.mapPointWithGeoCoord(lat!!, lon!!)
+        //내 위치 좌표를 받아온다
+        val mapPoint = MapPoint.mapPointWithGeoCoord(lat!!, lon!!)
 
-            //지도의 중심점을 내 위치로 설정, 확대 레벨 설정 (값이 작을수록 더 확대됨)
-            //mapView.setMapCenterPoint(mapPoint, true)
-            //mapView.setZoomLevel(1, true)
+        //마커 생성
+        val marker = MapPOIItem()
+        marker.itemName = id
+        marker.mapPoint = mapPoint
+        marker.markerType = MapPOIItem.MarkerType.YellowPin
+        marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
 
-            //마커 생성
-            val marker = MapPOIItem()
-            marker.itemName = id
-            marker.mapPoint = mapPoint
-            marker.markerType = MapPOIItem.MarkerType.YellowPin
-            marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
-
-            mapView.addPOIItem(marker)
+        mapView.addPOIItem(marker)
 
     }
 
-
-
-
-
-
-
     private fun addMyMarker() {
-     //   val mapView = MapView(this)
-        binding.clKakaoMapView.addView(mapView)
+        //   val mapView = MapView(this)
+//        binding.clKakaoMapView.addView(mapView)
 
-         //내 위치 좌표를 받아온다
+        //내 위치 좌표를 받아온다
         val mapPoint = MapPoint.mapPointWithGeoCoord(MyLocation.lat, MyLocation.lon)
 
         //지도의 중심점을 내 위치로 설정, 확대 레벨 설정 (값이 작을수록 더 확대됨)
@@ -189,6 +191,10 @@ class MainActivity : AppCompatActivity() {
     private fun getLocationFromDB() {
         //FireBase에서 Location데이타 불러와 데이터스냅샷 형태로 저장후 잘라서 싱글톤객체 myLocation에 저장.
         var snapshotData: Map<String, Any>
+        firestore = FirebaseFirestore.getInstance()
+        Log.d("로그!!: ",firestore.toString())
+        uid = FirebaseAuth.getInstance().currentUser?.uid
+        Log.d("로그!!내uid: ",firestore.toString())
         val dbData = firestore!!.collection("uid").document("${uid}")
         dbData.get()
             .addOnSuccessListener { doc ->
@@ -211,9 +217,9 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     private fun firebaseLogin() {
-        //고정로그인(테스트용)
+/*        //고정로그인(테스트용)
         auth?.signInWithEmailAndPassword("test1@test.com", "test123")?.addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 Log.d("로그 파이어베이스로그인", "로그인 성공" + "${auth}")
@@ -224,27 +230,9 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Log.d("로그 파이어베이스로그인", "로그인 실패" + "${auth}")
             }
-        }
+        }*/
+
+        getLocationFromDB()
+        getFollowers()
     }
-
-
-    @RequiresApi(Build.VERSION_CODES.P)
-    fun getHash(){
-        //디버깅용 :: 해쉬코드 발급용 코드
-        try {
-            val information = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES)
-            val signatures = information.signingInfo.apkContentsSigners
-            for (signature in signatures) {
-                val md = MessageDigest.getInstance("SHA").apply {
-                    update(signature.toByteArray())
-                }
-                val HASH_CODE = String(Base64.encode(md.digest(), 0))
-
-                Log.d(TAG, "HASH_CODE -> $HASH_CODE")
-            }
-        } catch (e: Exception) {
-            Log.d(TAG, "Exception -> $e")
-        }
-
-    }*/
 }
