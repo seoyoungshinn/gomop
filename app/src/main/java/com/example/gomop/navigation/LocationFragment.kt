@@ -138,7 +138,7 @@ class LocationFragment : Fragment() {
                 Log.d("로그 in Frag, LocationDTOArray ",locationDTOArray[i].toString())
                 i++
                 if (userInfo != null) {
-                    addOthersMarker(userInfo.lat, userInfo.lon, userInfo.id, mapView)
+                    addOthersMarker(userInfo.lat, userInfo.lon, userInfo.id,userInfo.updateTime, mapView)
                 }
             }
         }
@@ -146,7 +146,7 @@ class LocationFragment : Fragment() {
 
     }
 
-    private fun addOthersMarker(lat:Double, lon:Double, id:String,mapView:MapView) {
+    private fun addOthersMarker(lat:Double, lon:Double, id:String,updateTime:String, mapView:MapView) {
         //        val mapView = MapView(this)
         //       binding.clKakaoMapView.addView(mapView)
 
@@ -156,7 +156,7 @@ class LocationFragment : Fragment() {
 
         //마커 생성
         val marker = MapPOIItem()
-        marker.itemName = id
+        marker.itemName = id +"님\n"+ updateTime
         marker.mapPoint = mapPoint
         marker.markerType = MapPOIItem.MarkerType.YellowPin
         marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
@@ -178,7 +178,7 @@ class LocationFragment : Fragment() {
 
         //마커 생성
         val marker = MapPOIItem()
-        marker.itemName = "나의 최근 위치"
+        marker.itemName = "내 위치\n"+MyLocation.updateTime
         marker.mapPoint = mapPoint
         marker.markerType = MapPOIItem.MarkerType.BluePin
         marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
@@ -205,6 +205,7 @@ class LocationFragment : Fragment() {
                     // Preference.score = "${snapshotData.get("score")}".toInt()
                     MyLocation.lon = "${snapshotData!!.get("lon")}".toDouble()
                     MyLocation.lat = "${snapshotData!!.get("lat")}".toDouble()
+                    MyLocation.updateTime ="${snapshotData!!.get("updateTime")}".toString()
                     Log.d("로그 DB내 좌표 : ","${MyLocation.lon}"+"${MyLocation.lat}")
                     addMyMarker()
 
